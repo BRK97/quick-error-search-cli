@@ -1,5 +1,7 @@
 import puppeteer from "puppeteer";
 
+let temp;
+
 const findSolutions = async (errCode) => {
     let url = `https://www.google.co.il/search?q=${errCode}`
 
@@ -16,8 +18,10 @@ const findSolutions = async (errCode) => {
 
         return links;
     });
-    console.log(grabLinks);
+    temp = grabLinks;
     await browser.close();
+
+    return temp;
 };
 
 export {findSolutions}
