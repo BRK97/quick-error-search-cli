@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.0.1",
     "chalk-animation": "^2.0.2",
     "inquirer": "^8.2.4",
     "nanospinner": "^1.1.0",

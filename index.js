@@ -2,6 +2,7 @@
 import chalkAnimation from 'chalk-animation';
 import inquirer from 'inquirer';
 import {createSpinner} from 'nanospinner';
+import chalk from 'chalk';
 
 import {findSolutions} from "./scrape.js";
 
@@ -15,18 +16,22 @@ const aprovedWebsites = [
     "https://developer.mozilla.org",
     "https://github.com",
 ];
+const sleep = (ms=2000) => new Promise((r)=>{setTimeout(r,ms)});
 
 
 const onlyAproved = async (links) => {
+    let temp = [];
     for(let i=0; i< links.length; i++) {
         for(let j=0; j< aprovedWebsites.length; j++){
-            if(links[i].indexOf(aprovedWebsites[j]) == 0){ aprovedLinks.push(links[i])}
+            if(links[i].indexOf(aprovedWebsites[j]) == 0){ temp.push(links[i])}
         }
     }
+    temp = [...new Set(temp)]; //removes duplicates
+    return temp;
 
 };
 
-const displayLinks = async () => {
+const displayLinks = async (aprovedLinks) => {
     if(aprovedLinks.length == 0){
         const spinner = createSpinner('Please wait...').start();
         await sleep();
@@ -35,7 +40,9 @@ const displayLinks = async () => {
         const spinner = createSpinner('Please wait...').start();
         await sleep();
         spinner.success({ text: `Found ${aprovedLinks.length} possible solution` });
-        console.log(aprovedLinks);
+        for(let i=0; i< aprovedLinks.length; i++){
+            console.log("\n" + `${i+1}` + ") " + chalk.blue(aprovedLinks[i]));
+        }
     }
 }
 
@@ -48,7 +55,6 @@ const askErrMsg = async () => {
 
     return answer.error_message;
 }
-const sleep = (ms=2000) => new Promise((r)=>{setTimeout(r,ms)});
 
 const welcome = async () => {
     const rainbow = chalkAnimation.rainbow(
@@ -62,8 +68,8 @@ const start = async () => {
     console.clear();
     await welcome();
     errMsg = await askErrMsg();
-    await onlyAproved( await findSolutions(errMsg));
-    await displayLinks();
+    aprovedLinks = await onlyAproved( await findSolutions(errMsg));
+    await displayLinks(aprovedLinks);
 }
 
 start();
